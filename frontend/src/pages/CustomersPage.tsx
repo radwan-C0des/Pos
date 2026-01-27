@@ -193,7 +193,7 @@ const CustomersPage: React.FC = () => {
       title: 'TOTAL SPENT',
       dataIndex: 'total_spent',
       key: 'spent',
-      render: (spent: number) => <strong>${parseFloat(String(spent)).toFixed(2)}</strong>,
+      render: (spent: number) => <strong>{formatCurrency(parseFloat(String(spent)))}</strong>,
     },
     {
       title: 'LAST VISIT',
@@ -252,15 +252,14 @@ const CustomersPage: React.FC = () => {
               title="AVG. LIFETIME VALUE"
               value={
                 customersData?.customers?.length > 0
-                  ? (
+                  ? formatCurrency(
                     customersData.customers.reduce(
                       (sum: number, c: Customer) => sum + parseFloat(String(c.total_spent)),
                       0
                     ) / customersData.customers.length
-                  ).toFixed(2)
-                  : '0'
+                  )
+                  : formatCurrency(0)
               }
-              prefix="$"
             />
           </Card>
         </Col>

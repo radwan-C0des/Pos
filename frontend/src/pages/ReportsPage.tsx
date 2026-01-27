@@ -426,7 +426,7 @@ const ReportsPage: React.FC = () => {
                             prefix={<DollarOutlined />}
                             suffix=""
                             valueStyle={{ color: '#fff', fontSize: 24, fontWeight: 700 }}
-                            formatter={(value) => `$${Number(value).toFixed(2)}`}
+                            formatter={(value) => formatCurrency(Number(value))}
                         />
                     </Card>
                 </Col>
@@ -445,7 +445,7 @@ const ReportsPage: React.FC = () => {
                             value={avgTransactionValue}
                             suffix=""
                             valueStyle={{ color: '#fff', fontSize: 24, fontWeight: 700 }}
-                            formatter={(value) => `$${Number(value).toFixed(2)}`}
+                            formatter={(value) => formatCurrency(Number(value))}
                         />
                     </Card>
                 </Col>

@@ -467,7 +467,7 @@ const ProductsPage: React.FC = () => {
 
                         {/* Price */}
                         <Form.Item
-                            label={<Text strong>Price ($)</Text>}
+                            label={<Text strong>Price</Text>}
                             name="price"
                             rules={[{ required: true, message: 'Please enter price!' }]}
                         >

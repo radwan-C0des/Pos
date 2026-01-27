@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Table, DatePicker, Typography, Spin } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
+import { useLocalization } from '../context/LocalizationContext';
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 
 const SalesHistoryPage: React.FC = () => {
     const [dates, setDates] = useState<any>(null);
+    const { formatCurrency } = useLocalization();
 
     const { data, isLoading } = useQuery({
         queryKey: ['sales-history', dates],
@@ -41,7 +43,7 @@ const SalesHistoryPage: React.FC = () => {
             title: 'Total amount',
             dataIndex: 'total_amount',
             key: 'total_amount',
-            render: (val: any) => `$${val}`,
+            render: (val: any) => formatCurrency(Number(val)),
         },
         {
             title: 'Items',
