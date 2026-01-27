@@ -21,6 +21,13 @@ export class SalesService {
                 for (const item of dto.items) {
                     const product = await tx.product.findUnique({
                         where: { id: item.product_id },
+                        select: {
+                            id: true,
+                            name: true,
+                            price: true,
+                            stock_quantity: true,
+                            // Exclude image_url to avoid loading large base64 data during transaction
+                        },
                     });
 
                     if (!product) {
@@ -66,7 +73,16 @@ export class SalesService {
                     include: {
                         sale_items: {
                             include: {
-                                product: true,
+                                product: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        price: true,
+                                        category: true,
+                                        stock_quantity: true,
+                                        // Exclude image_url to improve performance
+                                    },
+                                },
                             },
                         },
                         customer: true,
@@ -117,7 +133,16 @@ export class SalesService {
                     customer: { select: { id: true, first_name: true, last_name: true, email: true } },
                     sale_items: {
                         include: {
-                            product: true,
+                            product: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    price: true,
+                                    category: true,
+                                    stock_quantity: true,
+                                    image_url: true, // Include for display in reports
+                                },
+                            },
                         },
                     },
                 },
@@ -134,7 +159,16 @@ export class SalesService {
             include: {
                 sale_items: {
                     include: {
-                        product: true,
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                price: true,
+                                category: true,
+                                stock_quantity: true,
+                                image_url: true, // Include for display in sale details
+                            },
+                        },
                     },
                 },
                 user: { select: { id: true, email: true } },
