@@ -49,6 +49,18 @@ const ReportsPage: React.FC = () => {
     const [customDateRange, setCustomDateRange] = useState<any>(null);
     const { formatCurrency, preferences } = useLocalization();
 
+    // Helper function to get image URL (handles both base64 and regular URLs)
+    const getImageUrl = (imageUrl: string | null | undefined) => {
+        if (!imageUrl) return null;
+        // If it's already a data URI or external URL, return as is
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+            return imageUrl;
+        }
+        // Otherwise, prepend API URL (for backward compatibility)
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        return `${apiBaseUrl}${imageUrl}`;
+    };
+
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['sales', dates, searchText],
         queryFn: async () => {
@@ -607,7 +619,6 @@ const ReportsPage: React.FC = () => {
                             dataSource={selectedSale.sale_items}
                             style={{ marginBottom: 24 }}
                             renderItem={(item: any, index: number) => {
-                                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
                                 const itemTotal = Number(item.unit_price) * item.quantity;
                                 return (
                                     <List.Item style={{ 
@@ -620,7 +631,7 @@ const ReportsPage: React.FC = () => {
                                             <Avatar 
                                                 shape="square" 
                                                 size={64}
-                                                src={item.product?.image_url ? `${apiBaseUrl}${item.product.image_url}` : undefined}
+                                                src={getImageUrl(item.product?.image_url) || undefined}
                                                 style={{ backgroundColor: item.product?.image_url ? 'transparent' : '#1677ff', borderRadius: 8 }}
                                             >
                                                 {!item.product?.image_url && '📦'}

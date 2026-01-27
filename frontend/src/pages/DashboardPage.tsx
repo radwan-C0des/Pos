@@ -21,6 +21,18 @@ const DashboardPage: React.FC = () => {
     const { formatCurrency, t } = useLocalization();
     const [revenuePeriod, setRevenuePeriod] = useState<'day' | 'week' | 'month' | 'year'>('week');
 
+    // Helper function to get image URL (handles both base64 and regular URLs)
+    const getImageUrl = (imageUrl: string | null | undefined) => {
+        if (!imageUrl) return null;
+        // If it's already a data URI or external URL, return as is
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+            return imageUrl;
+        }
+        // Otherwise, prepend API URL (for backward compatibility)
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        return `${apiBaseUrl}${imageUrl}`;
+    };
+
     const { data: salesData } = useQuery({
         queryKey: ['sales'],
         queryFn: async () => {
@@ -124,14 +136,13 @@ const DashboardPage: React.FC = () => {
             key: 'items',
             render: (_: any, record: any) => {
                 const firstProduct = record.sale_items?.[0]?.product;
-                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
                 const productName = firstProduct?.name || 'Unknown Product';
                 return (
                     <Space>
                         <Avatar 
                             shape="square" 
                             size={40}
-                            src={firstProduct?.image_url ? `${apiBaseUrl}${firstProduct.image_url}` : undefined}
+                            src={getImageUrl(firstProduct?.image_url) || undefined}
                             style={{ 
                                 backgroundColor: firstProduct?.image_url ? 'transparent' : '#1677ff',
                                 borderRadius: 6

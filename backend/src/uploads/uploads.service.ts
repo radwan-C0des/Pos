@@ -1,7 +1,4 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
-import { randomBytes } from 'crypto';
 
 interface FileObject {
   buffer: Buffer;
@@ -12,22 +9,6 @@ interface FileObject {
 
 @Injectable()
 export class UploadsService {
-  private readonly uploadsDir = path.join(process.cwd(), 'uploads');
-
-  constructor() {
-    this.ensureUploadsDirectory();
-  }
-
-  private ensureUploadsDirectory() {
-    if (!fs.existsSync(this.uploadsDir)) {
-      fs.mkdirSync(this.uploadsDir, { recursive: true });
-    }
-  }
-
-  private generateFileName(): string {
-    return randomBytes(16).toString('hex');
-  }
-
   async uploadFile(file: FileObject, type: 'product' | 'profile'): Promise<string> {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -48,34 +29,19 @@ export class UploadsService {
     }
 
     try {
-      const typeDir = path.join(this.uploadsDir, type);
-      if (!fs.existsSync(typeDir)) {
-        fs.mkdirSync(typeDir, { recursive: true });
-      }
-
-      const fileExtension = path.extname(file.originalname);
-      const fileName = `${this.generateFileName()}${fileExtension}`;
-      const filePath = path.join(typeDir, fileName);
-
-      fs.writeFileSync(filePath, file.buffer);
-
-      // Return relative URL path
-      return `/uploads/${type}/${fileName}`;
+      // Convert buffer to base64
+      const base64Image = file.buffer.toString('base64');
+      
+      // Return data URI format: data:image/jpeg;base64,/9j/4AAQ...
+      return `data:${file.mimetype};base64,${base64Image}`;
     } catch (error) {
       throw new BadRequestException(`Failed to upload file: ${error.message}`);
     }
   }
 
   async deleteFile(filePath: string): Promise<void> {
-    if (!filePath) return;
-
-    try {
-      const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ''));
-      if (fs.existsSync(fullPath)) {
-        fs.unlinkSync(fullPath);
-      }
-    } catch (error) {
-      // Silently handle file deletion errors
-    }
+    // No need to delete files since we're storing in database
+    // This method is kept for backward compatibility
+    return;
   }
 }

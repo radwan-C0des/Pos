@@ -22,6 +22,18 @@ const ProductsPage: React.FC = () => {
     const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Helper function to get image URL (handles both base64 and regular URLs)
+    const getImageUrl = (imageUrl: string | null | undefined) => {
+        if (!imageUrl) return null;
+        // If it's already a data URI or external URL, return as is
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+            return imageUrl;
+        }
+        // Otherwise, prepend API URL (for backward compatibility)
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        return `${apiBaseUrl}${imageUrl}`;
+    };
+
     // Category label mapper
     const getCategoryLabel = (category: string) => {
         const categoryMap: Record<string, string> = {
@@ -94,8 +106,8 @@ const ProductsPage: React.FC = () => {
         form.setFieldsValue(record);
         // Show existing image from backend if editing
         if (record.image_url) {
-            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-            setPreviewImage(`${apiBaseUrl}${record.image_url}`);
+            const imageUrl = getImageUrl(record.image_url);
+            setPreviewImage(imageUrl || '');
             setCurrentImageUrl(record.image_url);
         } else {
             setPreviewImage('');
@@ -166,10 +178,9 @@ const ProductsPage: React.FC = () => {
             });
 
             if (response.data.success) {
-                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                const backendUrl = `${apiBaseUrl}${response.data.imageUrl}`;
-                setCurrentImageUrl(response.data.imageUrl);
-                setPreviewImage(backendUrl);
+                const imageUrl = response.data.imageUrl;
+                setCurrentImageUrl(imageUrl);
+                setPreviewImage(imageUrl); // Base64 data URI can be used directly
                 message.success('Image uploaded successfully!');
             }
         } catch (error: any) {
@@ -187,13 +198,12 @@ const ProductsPage: React.FC = () => {
             title: 'PRODUCT NAME',
             key: 'name',
             render: (_: any, record: any) => {
-                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
                 return (
                     <Space>
                         <Avatar
                             shape="square"
                             size={40}
-                            src={record.image_url ? `${apiBaseUrl}${record.image_url}` : `https://api.dicebear.com/7.x/shapes/svg?seed=${record.id}`}
+                            src={getImageUrl(record.image_url) || `https://api.dicebear.com/7.x/shapes/svg?seed=${record.id}`}
                             style={{ borderRadius: 6 }}
                         />
                         <div style={{ display: 'flex', flexDirection: 'column' }}>

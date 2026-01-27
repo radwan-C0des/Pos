@@ -48,6 +48,18 @@ const NewSalePage: React.FC = () => {
     const location = useLocation();
     const { formatCurrency } = useLocalization();
 
+    // Helper function to get image URL (handles both base64 and regular URLs)
+    const getImageUrl = (imageUrl: string | null | undefined) => {
+        if (!imageUrl) return null;
+        // If it's already a data URI or external URL, return as is
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+            return imageUrl;
+        }
+        // Otherwise, prepend API URL (for backward compatibility)
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        return `${apiBaseUrl}${imageUrl}`;
+    };
+
     const { data: productsData, isLoading: productsLoading, isError: productsError } = useQuery({
         queryKey: ['products'],
         queryFn: async () => {
@@ -222,7 +234,7 @@ const NewSalePage: React.FC = () => {
                                         <div style={{ position: 'relative' }}>
                                             <img
                                                 alt={p.name}
-                                                src={p.image_url ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${p.image_url}` : `https://api.dicebear.com/7.x/shapes/svg?seed=${p.id}`}
+                                                src={getImageUrl(p.image_url) || `https://api.dicebear.com/7.x/shapes/svg?seed=${p.id}`}
                                                 style={{ height: 160, width: '100%', objectFit: 'cover' }}
                                             />
                                             <Tag color="black" style={{ position: 'absolute', top: 8, right: 8, borderRadius: 4 }}>
@@ -313,7 +325,7 @@ const NewSalePage: React.FC = () => {
                         renderItem={(item) => (
                             <List.Item style={{ padding: '16px 0', borderBottom: '1px solid #f3f4f6' }}>
                                 <div style={{ display: 'flex', gap: 12, width: '100%' }}>
-                                    <Avatar shape="square" size={48} src={item.image_url ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${item.image_url}` : `https://api.dicebear.com/7.x/shapes/svg?seed=${item.product_id}`} style={{ borderRadius: 6 }} />
+                                    <Avatar shape="square" size={48} src={getImageUrl(item.image_url) || `https://api.dicebear.com/7.x/shapes/svg?seed=${item.product_id}`} style={{ borderRadius: 6 }} />
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Text strong>{item.name}</Text>

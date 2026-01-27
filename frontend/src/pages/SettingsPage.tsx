@@ -55,6 +55,18 @@ const SettingsPage: React.FC = () => {
     const [uploadingImage, setUploadingImage] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Helper function to get image URL (handles both base64 and regular URLs)
+    const getImageUrl = (imageUrl: string | null | undefined) => {
+        if (!imageUrl) return null;
+        // If it's already a data URI or external URL, return as is
+        if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
+            return imageUrl;
+        }
+        // Otherwise, prepend API URL (for backward compatibility)
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        return `${apiBaseUrl}${imageUrl}`;
+    };
+
     // Fetch user profile data
     const { data: profileData, isLoading: profileLoading } = useQuery({
         queryKey: ['user-profile'],
@@ -87,8 +99,8 @@ const SettingsPage: React.FC = () => {
             });
             // Set profile image URL with full hostname if it exists
             if (profileData.profile_image_url) {
-                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                setProfileImageUrl(`${apiBaseUrl}${profileData.profile_image_url}`);
+                const imageUrl = getImageUrl(profileData.profile_image_url);
+                setProfileImageUrl(imageUrl || '');
             } else {
                 setProfileImageUrl('');
             }
@@ -126,9 +138,8 @@ const SettingsPage: React.FC = () => {
             });
 
             if (response.data.success) {
-                const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                const imageUrlWithHost = `${apiBaseUrl}${response.data.imageUrl}`;
-                setProfileImageUrl(imageUrlWithHost);
+                const imageUrl = response.data.imageUrl;
+                setProfileImageUrl(imageUrl); // Base64 data URI can be used directly
                 message.success('Profile image updated successfully!');
 
                 // Refetch all profile-related queries to sync everywhere
