@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Blue background circle -->
+  <circle cx="32" cy="32" r="32" fill="#1677ff"/>
+  
+  <!-- Shopping cart icon in white -->
+  <g fill="white">
+    <!-- Cart body -->
+    <path d="M20 20l4 20h20l4-20H20z" stroke="white" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    <!-- Cart handle -->
+    <path d="M16 16h8l2 4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Left wheel -->
+    <circle cx="26" cy="44" r="2" fill="white"/>
+    <!-- Right wheel -->
+    <circle cx="42" cy="44" r="2" fill="white"/>
+  </g>
+</svg>
