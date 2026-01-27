@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(uuid()) @db.Uuid
+  email            String   @unique @db.VarChar(255)
+  password         String   @db.VarChar(255)
+  full_name        String?  @db.VarChar(255)
+  phone            String?  @db.VarChar(20)
+  company          String?  @db.VarChar(255)
+  address          String?  @db.Text
+  profile_image_url String? @db.Text
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  sales            Sale[]
+
+  @@map("users")
+}
+
+model Product {
+  id             String     @id @default(uuid()) @db.Uuid
+  name           String     @db.VarChar(255)
+  sku            String     @unique @db.VarChar(100)
+  category       String     @db.VarChar(100) @default("General")
+  price          Decimal    @db.Decimal(10, 2)
+  stock_quantity Int        @db.Integer
+  image_url      String?    @db.Text
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  sale_items     SaleItem[]
+
+  @@map("products")
+}
+
+model Customer {
+  id           String   @id @default(uuid()) @db.Uuid
+  first_name   String   @db.VarChar(255)
+  last_name    String   @db.VarChar(255)
+  email        String   @db.VarChar(255)
+  phone        String   @db.VarChar(20)
+  internal_notes String? @db.Text
+  total_orders Int      @default(0)
+  total_spent  Decimal  @default(0) @db.Decimal(10, 2)
+  last_visit   DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  sales        Sale[]
+
+  @@map("customers")
+}
+
+model Sale {
+  id           String     @id @default(uuid()) @db.Uuid
+  user         User       @relation(fields: [user_id], references: [id])
+  user_id      String     @db.Uuid
+  customer     Customer?  @relation(fields: [customer_id], references: [id])
+  customer_id  String?    @db.Uuid
+  total_amount Decimal    @db.Decimal(10, 2)
+  created_at   DateTime   @default(now())
+  sale_items   SaleItem[]
+
+  @@map("sales")
+}
+
+model SaleItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  sale       Sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  sale_id    String   @db.Uuid
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id String   @db.Uuid
+  quantity   Int      @db.Integer
+  unit_price Decimal  @db.Decimal(10, 2)
+  subtotal   Decimal  @db.Decimal(10, 2)
+  created_at DateTime @default(now())
+
+  @@map("sale_items")
+}
