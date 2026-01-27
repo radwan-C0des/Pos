@@ -25,8 +25,18 @@ api.interceptors.response.use(
         
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
+            
+            const refreshToken = localStorage.getItem('refreshToken');
+            
+            // If no refresh token, clear storage and reject (don't redirect here)
+            if (!refreshToken) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+                return Promise.reject(error);
+            }
+            
             try {
-                const refreshToken = localStorage.getItem('refreshToken');
                 const { data } = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {
                     refreshToken,
                 });
@@ -34,9 +44,10 @@ api.interceptors.response.use(
                 originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
                 return api(originalRequest);
             } catch (err) {
+                // Refresh token failed, clear storage
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                window.location.href = '/login';
+                localStorage.removeItem('user');
                 return Promise.reject(err);
             }
         }

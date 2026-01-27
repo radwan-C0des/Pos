@@ -37,8 +37,10 @@ const MainLayout: React.FC = () => {
             const { data } = await api.get('/auth/profile');
             return data;
         },
+        enabled: !!user, // Only fetch if user is logged in
         staleTime: 5 * 60 * 1000, // 5 minutes
         refetchOnWindowFocus: true, // Refetch when window regains focus
+        retry: false, // Don't retry on failure
     });
 
     const getBreadcrumbs = () => {
