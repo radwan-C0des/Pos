@@ -1,0 +1,964 @@
+{
+	"info": {
+		"_postman_id": "pos-api-collection-2026",
+		"name": "POS System API Collection",
+		"description": "Complete API documentation for the Point of Sale (POS) system. This collection includes all endpoints for authentication, products, customers, sales, and file uploads.\n\n## Base URL\n- Production: `https://your-production-url.com`\n- Local: `http://localhost:3000`\n\n## Authentication\nMost endpoints require JWT authentication. After logging in or registering, use the `accessToken` from the response in the Authorization header as a Bearer token.\n\n## Variables\nSet these variables in your Postman environment:\n- `baseUrl`: Your API base URL\n- `accessToken`: JWT access token (auto-set after login)\n- `refreshToken`: JWT refresh token (auto-set after login)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.accessToken) {",
+									"        pm.environment.set('accessToken', response.accessToken);",
+									"    }",
+									"    if (response.refreshToken) {",
+									"        pm.environment.set('refreshToken', response.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Register a new user account. Password must be at least 8 characters long."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.accessToken) {",
+									"        pm.environment.set('accessToken', response.accessToken);",
+									"    }",
+									"    if (response.refreshToken) {",
+									"        pm.environment.set('refreshToken', response.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Login with email and password. Returns access and refresh tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.accessToken) {",
+									"        pm.environment.set('accessToken', response.accessToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Refresh access token using refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						},
+						"description": "Logout current user. Invalidates tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "profile"]
+						},
+						"description": "Get current user profile information. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"John Doe\",\n  \"phone\": \"+1234567890\",\n  \"company\": \"My Company\",\n  \"address\": \"123 Main St, City, Country\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "profile"]
+						},
+						"description": "Update user profile information. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"newPassword\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "change-password"]
+						},
+						"description": "Change user password. Requires current password and new password (min 8 characters)."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"emailNotifications\": true,\n  \"pushNotifications\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/notifications",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "notifications"]
+						},
+						"description": "Update user notification preferences."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Preferences",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"language\": \"en\",\n  \"theme\": \"dark\",\n  \"currency\": \"USD\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/preferences",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "preferences"]
+						},
+						"description": "Update user preferences like language, theme, currency."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration, login, profile management, and token refresh."
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?page=1&limit=10&search=&sortBy=created_at&order=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term for product name or SKU"
+								},
+								{
+									"key": "sortBy",
+									"value": "created_at",
+									"description": "Field to sort by (e.g., name, price, created_at)"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort order: asc or desc"
+								}
+							]
+						},
+						"description": "Get all products with pagination, search, and sorting. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product-uuid-here",
+									"description": "Product UUID"
+								}
+							]
+						},
+						"description": "Get a specific product by its UUID. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Sample Product\",\n  \"sku\": \"SKU-12345\",\n  \"category\": \"Electronics\",\n  \"price\": 99.99,\n  \"stock_quantity\": 100,\n  \"image_url\": \"https://example.com/image.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						},
+						"description": "Create a new product. All fields except image_url are required. SKU must be unique."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Product Name\",\n  \"price\": 119.99,\n  \"stock_quantity\": 150\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product-uuid-here",
+									"description": "Product UUID"
+								}
+							]
+						},
+						"description": "Update an existing product. All fields are optional, only include fields you want to update."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product-uuid-here",
+									"description": "Product UUID"
+								}
+							]
+						},
+						"description": "Delete a product by its UUID. This action cannot be undone."
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Image file (JPEG, PNG, etc.)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/:id/image",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", ":id", "image"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product-uuid-here",
+									"description": "Product UUID"
+								}
+							]
+						},
+						"description": "Upload an image for a specific product. Automatically updates the product's image_url."
+					},
+					"response": []
+				}
+			],
+			"description": "Product management endpoints for CRUD operations and image uploads."
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/customers?page=1&limit=10&search=&sortBy=created_at&order=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term for customer name or email"
+								},
+								{
+									"key": "sortBy",
+									"value": "created_at",
+									"description": "Field to sort by"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort order: asc or desc"
+								}
+							]
+						},
+						"description": "Get all customers with pagination, search, and sorting. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "customer-uuid-here",
+									"description": "Customer UUID"
+								}
+							]
+						},
+						"description": "Get a specific customer by UUID, including purchase history."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"internal_notes\": \"VIP customer\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"]
+						},
+						"description": "Create a new customer. internal_notes is optional, all other fields are required."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Jane\",\n  \"phone\": \"+0987654321\",\n  \"internal_notes\": \"Updated notes\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "customer-uuid-here",
+									"description": "Customer UUID"
+								}
+							]
+						},
+						"description": "Update customer information. All fields are optional."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/customers/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "customer-uuid-here",
+									"description": "Customer UUID"
+								}
+							]
+						},
+						"description": "Delete a customer by UUID. This action cannot be undone."
+					},
+					"response": []
+				}
+			],
+			"description": "Customer management endpoints for CRUD operations."
+		},
+		{
+			"name": "Sales",
+			"item": [
+				{
+					"name": "Get All Sales",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sales?page=1&limit=10&startDate=&endDate=",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page (default: 10)"
+								},
+								{
+									"key": "startDate",
+									"value": "",
+									"description": "Filter sales from this date (ISO format: 2026-01-01)"
+								},
+								{
+									"key": "endDate",
+									"value": "",
+									"description": "Filter sales until this date (ISO format: 2026-01-31)"
+								}
+							]
+						},
+						"description": "Get all sales with pagination and date filtering. Includes customer and sale items details."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sale by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sales/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "sale-uuid-here",
+									"description": "Sale UUID"
+								}
+							]
+						},
+						"description": "Get detailed information about a specific sale including all items, customer, and user details."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sale",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"product-uuid-1\",\n      \"quantity\": 2\n    },\n    {\n      \"product_id\": \"product-uuid-2\",\n      \"quantity\": 1\n    }\n  ],\n  \"customer_id\": \"customer-uuid-here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sales",
+							"host": ["{{baseUrl}}"],
+							"path": ["sales"]
+						},
+						"description": "Create a new sale. Automatically calculates totals and updates product stock. customer_id is optional for walk-in customers."
+					},
+					"response": []
+				}
+			],
+			"description": "Sales management endpoints for creating and viewing sales transactions."
+		},
+		{
+			"name": "Uploads",
+			"item": [
+				{
+					"name": "Upload Product Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Image file to upload"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/uploads/product",
+							"host": ["{{baseUrl}}"],
+							"path": ["uploads", "product"]
+						},
+						"description": "Upload a product image. Returns the image URL that can be used when creating/updating products."
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Profile Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Profile image file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/uploads/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["uploads", "profile"]
+						},
+						"description": "Upload user profile image. Automatically updates the user's profile_image_url and deletes old image if exists."
+					},
+					"response": []
+				}
+			],
+			"description": "File upload endpoints for product and profile images."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
