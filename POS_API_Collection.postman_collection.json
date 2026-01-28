@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "pos-api-collection-2026",
 		"name": "POS System API Collection",
-		"description": "Complete API documentation for the Point of Sale (POS) system. This collection includes all endpoints for authentication, products, customers, sales, and file uploads.\n\n## Base URL\n- Production: `https://your-production-url.com`\n- Local: `http://localhost:3000`\n\n## Authentication\nMost endpoints require JWT authentication. After logging in or registering, use the `accessToken` from the response in the Authorization header as a Bearer token.\n\n## Variables\nSet these variables in your Postman environment:\n- `baseUrl`: Your API base URL\n- `accessToken`: JWT access token (auto-set after login)\n- `refreshToken`: JWT refresh token (auto-set after login)",
+		"description": "Complete API documentation for the Point of Sale (POS) system. This collection includes all endpoints for authentication, products, customers, sales, and file uploads.\n\n## Base URL\n- Production: `https://pos-bu4g.onrender.com`\n- Local: `http://localhost:3000`\n\n## Authentication\nMost endpoints require JWT authentication. After logging in or registering, use the `accessToken` from the response in the Authorization header as a Bearer token.\n\n## Variables\nThe collection is pre-configured with:\n- `baseUrl`: `https://pos-bu4g.onrender.com` (your production API)\n- `accessToken`: JWT access token (auto-set after login)\n- `refreshToken`: JWT refresh token (auto-set after login)\n\nTokens are automatically saved after login/register!",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -947,7 +947,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3000",
+			"value": "https://pos-bu4g.onrender.com",
 			"type": "string"
 		},
 		{

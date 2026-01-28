@@ -45,8 +45,8 @@ npm run start:dev
 ```
 
 ### Base URLs
+- **Production**: `https://pos-bu4g.onrender.com`
 - **Local Development**: `http://localhost:3000`
-- **Production**: `https://your-production-url.com`
 
 ## 🔐 Authentication
 
@@ -595,9 +595,15 @@ The API uses standard HTTP status codes:
 
 ### Setup Environment
 
+**Option 1: Use Pre-configured Variables (Recommended)**
+- The collection comes with `baseUrl` set to `https://pos-bu4g.onrender.com`
+- `accessToken` and `refreshToken` will be auto-set after login
+- No need to create an environment!
+
+**Option 2: Create Custom Environment**
 1. Create a new environment in Postman
 2. Add these variables:
-   - `baseUrl`: `http://localhost:3000` (or your server URL)
+   - `baseUrl`: `https://pos-bu4g.onrender.com` (or `http://localhost:3000` for local)
    - `accessToken`: (leave empty, will be auto-set)
    - `refreshToken`: (leave empty, will be auto-set)
 
